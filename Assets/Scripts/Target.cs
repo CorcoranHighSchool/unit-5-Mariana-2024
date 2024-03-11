@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Target : MonoBehaviour
 {
+    public ParticleSystem explosionParticle;
+    public int pointValue;
     private Rigidbody targetRb;
     private float minSpeed = 12.0f;
     private float maxSpeed = 16.0f;
@@ -26,7 +28,7 @@ public class Target : MonoBehaviour
         //set the position of the target to a random position
         transform.position = RandomSpawnPos();
     }
-    Vector3 RandomForce()
+    private Vector3 RandomForce()
     {
         return Vector3.up * Random.Range(minSpeed, maxSpeed);
     }
@@ -40,11 +42,17 @@ public class Target : MonoBehaviour
     }
     private void OnMouseDown()
     {
+        if (!GameManager.instance.isGameActive) return;
         Destroy(gameObject);
+        GameManager.instance.UpdateScore(pointValue);
+        Instantiate(explosionParticle, transform.position, explosionParticle.transform.rotation);
     }
     private void OnTriggerEnter(Collider other)
     {
         Destroy(gameObject);
+        if (!gameObject.CompareTag("Bad"))
+        {
+            GameManager.instance.GameOver();
+        }
     }
-
 }
